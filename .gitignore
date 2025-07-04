@@ -1,0 +1,66 @@
+# Node.js
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+server/.env
+
+# Build output
+dist/
+build/
+
+# Dependency directories
+client/node_modules/
+server/node_modules/
+
+# IDE specific files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+coverage/
+
+# React specific
+client/build/
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
+
+# Miscellaneous
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+
+# service-ai
+service-ai/.env
+
+# linkedin sessions
+server/linkedin_auth.json
+server/.linkedin_profile/
+
+# dossier downloads contient des CVs
+server/downloads
+
+# .env/server/service-ai
+server/.env
+service-ai/.env
+
+server/uploads/
+server/migration_test/
+server/models_test/

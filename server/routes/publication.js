@@ -7,8 +7,16 @@ const {
   getJobOffer,
   triggerLinkedInPost,
 } = require("../controllers/publicationController");
+const {
+  authenticateToken,
+  requireAdmin,
+  requireOwnershipOrAdmin,
+} = require("../middlewares/auth");
+
 
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.post("/classic", generateClassic);
 router.post("/preview", generatePlatformPreview);

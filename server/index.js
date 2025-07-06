@@ -10,6 +10,9 @@ const profileRoutes = require("./routes/profiles");
 const publicationRoutes = require("./routes/publication");
 const postingsRoutes = require("./routes/postings");
 const cvUploadRoutes = require("./routes/cvUpload");
+const candidateRoutes = require('./routes/candidate.routes');
+// const authRoutes = require('./routes/auth.routes');
+// const authMiddleware = require('./middlewares/auth.middleware');
 
 const app = express();
 const port = 5000;
@@ -33,6 +36,7 @@ app.use("/api/profiles", profileRoutes);
 app.use("/api/publications", publicationRoutes);
 app.use("/api/postings", postingsRoutes);
 app.use("/api", cvUploadRoutes);
+app.use("/api/candidates", candidateRoutes);
 
 app.listen(port, () => {
   console.log(`✅ Server running at http://localhost:${port}`);

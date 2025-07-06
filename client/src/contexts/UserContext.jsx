@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { userService } from "../services/user.service";
 
 const UserContext = createContext();
@@ -15,7 +15,7 @@ export function UserProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // Fonction pour charger l'utilisateur depuis l'API sécurisée
-  const loadUserFromAPI = async () => {
+  const loadUserFromAPI = useCallback(async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     if (!token) {
@@ -51,14 +51,14 @@ export function UserProvider({ children }) {
       });
     }
     setLoading(false);
-  };
+  }, []); // Empty dependency array since it doesn't depend on any props or state
 
   useEffect(() => {
     // Nettoyage de l'ancien localStorage
     localStorage.removeItem("user");
     loadUserFromAPI();
     // eslint-disable-next-line
-  }, []);
+  }, [loadUserFromAPI]);
 
   const refreshUser = loadUserFromAPI;
 

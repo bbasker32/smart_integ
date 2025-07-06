@@ -1,6 +1,7 @@
 // controllers/searchController.js
 const { Project, User } = require("../models/init-models");
 const Sequelize = require("sequelize");
+const logger = require('../utils/logger');
 
 exports.searchProjects = async (req, res) => {
   try {

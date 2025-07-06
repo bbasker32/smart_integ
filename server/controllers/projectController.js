@@ -1,5 +1,6 @@
 // controllers/projectController.js
 const { project, users, profile } = require("../models");
+const logger = require('../utils/logger');
 
 // Helper function to get participant names
 const getParticipantNames = async (participantsString) => {
@@ -22,13 +23,14 @@ const getParticipantNames = async (participantsString) => {
       name: `${user.firstName} ${user.lastName}`.trim(),
     }));
   } catch (error) {
-    console.error("Error fetching participant names:", error);
+    logger.error("Erreur lors de la récupération des noms des participants", { error: error.message, stack: error.stack });
     return [];
   }
 };
 
 // Get all projects
 exports.getAllProjects = async (req, res) => {
+  logger.info("[GET] /projects - Récupération de tous les projets", { query: req.query });
   try {
     const { userId, userRole } = req.query; // Get userId and userRole from query params
     const where = {};
@@ -57,6 +59,7 @@ exports.getAllProjects = async (req, res) => {
     // Only allow all projects for admin
     if (userRole !== "admin") {
       if (!userId) {
+        logger.warn("Accès refusé : userId manquant pour un non-admin");
         return res
           .status(403)
           .json({ error: "Access denied: userId required for non-admins" });
@@ -82,15 +85,17 @@ exports.getAllProjects = async (req, res) => {
         },
       ],
     });
+    logger.info("Projets récupérés", { count: projects.length });
     res.json(projects);
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    logger.error("Erreur lors de la récupération des projets", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Get single project
 exports.getProject = async (req, res) => {
+  logger.info("[GET] /projects/:id - Récupération d'un projet", { id: req.params.id });
   try {
     const Project = await project.findByPk(req.params.id, {
       include: [
@@ -107,7 +112,10 @@ exports.getProject = async (req, res) => {
       ],
     });
 
-    if (!Project) return res.status(404).json({ error: "Project not found" });
+    if (!Project) {
+      logger.warn("Projet non trouvé", { id: req.params.id });
+      return res.status(404).json({ error: "Project not found" });
+    }
 
     // Add participant information
     const projectData = Project.toJSON();
@@ -115,15 +123,17 @@ exports.getProject = async (req, res) => {
       Project.participants
     );
 
+    logger.info("Projet récupéré avec succès", { id: req.params.id });
     res.json(projectData);
   } catch (error) {
-    console.error("Error fetching project:", error);
+    logger.error("Erreur lors de la récupération du projet", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Create project
 exports.createProject = async (req, res) => {
+  logger.info("[POST] /projects - Création d'un projet", { body: req.body });
   try {
     const body = { ...req.body };
     // Map 'resp' to 'fk_user'
@@ -137,19 +147,25 @@ exports.createProject = async (req, res) => {
       body.participants = body.participants.join(",");
     }
     const Project = await project.create(body);
+    logger.info("Projet créé avec succès", { id: Project.id });
     res.status(201).json(Project);
   } catch (error) {
-    console.error("Error creating project:", error);
+    logger.error("Erreur lors de la création du projet", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Update project
 exports.updateProject = async (req, res) => {
+  logger.info("[PUT] /projects/:id - Mise à jour d'un projet", { id: req.params.id, body: req.body });
   try {
     const Project = await project.findByPk(req.params.id);
-    if (!Project) return res.status(404).json({ error: "Project not found" });
+    if (!Project) {
+      logger.warn("Projet non trouvé pour mise à jour", { id: req.params.id });
+      return res.status(404).json({ error: "Project not found" });
+    }
     if (Project.is_archived) {
+      logger.warn("Tentative de modification d'un projet archivé", { id: req.params.id });
       return res
         .status(403)
         .json({ error: "Impossible de modifier un projet archivé." });
@@ -166,24 +182,30 @@ exports.updateProject = async (req, res) => {
       body.participants = body.participants.join(",");
     }
     await Project.update(body);
+    logger.info("Projet mis à jour avec succès", { id: Project.id });
     res.json(Project);
   } catch (error) {
-    console.error("Error updating project:", error);
+    logger.error("Erreur lors de la mise à jour du projet", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Delete project
 exports.deleteProject = async (req, res) => {
+  logger.info("[DELETE] /projects/:id - Suppression d'un projet", { id: req.params.id });
   try {
     const Project = await project.findByPk(req.params.id, {
       include: [{ model: profile, as: "Profiles" }],
     });
-    if (!Project) return res.status(404).json({ error: "Project not found" });
+    if (!Project) {
+      logger.warn("Projet non trouvé pour suppression", { id: req.params.id });
+      return res.status(404).json({ error: "Project not found" });
+    }
 
     // Si le projet a des profils, on archive
     if (Project.Profiles && Project.Profiles.length > 0) {
       await Project.update({ is_archived: true });
+      logger.info("Projet archivé (non supprimé car il contient des profils)", { id: req.params.id });
       return res.status(200).json({
         message: "Projet archivé (non supprimé car il contient des profils)",
       });
@@ -191,24 +213,27 @@ exports.deleteProject = async (req, res) => {
 
     // Sinon, suppression normale
     await Project.destroy();
+    logger.info("Projet supprimé avec succès", { id: req.params.id });
     res.status(204).end();
   } catch (error) {
-    console.error("Error deleting/archiving project:", error);
+    logger.error("Erreur lors de la suppression/archivage du projet", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Get all profiles for a project
 exports.getProjectProfiles = async (req, res) => {
+  logger.info("[GET] /projects/:projectId/profiles - Récupération des profils d'un projet", { projectId: req.params.projectId });
   try {
     const profiles = await profile.findAll({
       where: { fk_project: req.params.projectId },
       attributes: ["id", "title"],
       order: [["id", "ASC"]],
     });
+    logger.info("Profils du projet récupérés", { projectId: req.params.projectId, count: profiles.length });
     res.json(profiles);
   } catch (error) {
-    console.error("Error fetching profiles:", error);
+    logger.error("Erreur lors de la récupération des profils du projet", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };

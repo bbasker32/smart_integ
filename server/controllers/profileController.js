@@ -1,5 +1,6 @@
 //controller/profileController.js
 const { profile, project, JobOffer, JobPosting } = require("../models");
+const logger = require('../utils/logger');
 
 // Helper function to process skills arrays
 const processProfileData = (data) => ({
@@ -11,13 +12,15 @@ const processProfileData = (data) => ({
 
 // Get all profiles
 exports.getAllProfiles = async (req, res) => {
+  logger.info("[GET] /profiles - Récupération de tous les profils");
   try {
     const profiles = await profile.findAll({
       order: [["createdAt", "DESC"]],
     });
+    logger.info("Profils récupérés", { count: profiles.length });
     res.json(profiles);
   } catch (error) {
-    console.error("Error fetching profiles:", error);
+    logger.error("Erreur lors de la récupération des profils", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
@@ -25,6 +28,7 @@ exports.getAllProfiles = async (req, res) => {
 // profileController.js
 
 exports.getProfile = async (req, res) => {
+  logger.info("[GET] /profiles/:id - Récupération d'un profil", { id: req.params.id });
   try {
     const Profile = await profile.findByPk(req.params.id, {
       include: [
@@ -37,6 +41,7 @@ exports.getProfile = async (req, res) => {
     });
 
     if (!Profile) {
+      logger.warn("Profil non trouvé", { id: req.params.id });
       return res.status(404).json({ error: "Profile not found" });
     }
 
@@ -50,21 +55,24 @@ exports.getProfile = async (req, res) => {
       languages: Profile.languages ? Profile.languages.split(", ") : [],
     };
 
+    logger.info("Profil récupéré avec succès", { id: req.params.id });
     res.json(responseData);
   } catch (error) {
-    console.error("Error fetching profile:", error);
+    logger.error("Erreur lors de la récupération du profil", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Create profile
 exports.createProfile = async (req, res) => {
+  logger.info("[POST] /profiles - Création d'un profil", { body: req.body });
   try {
     // Vérifier si le projet parent est archivé
     const projectId = req.body.fk_project;
     if (projectId) {
       const Project = await project.findByPk(projectId);
       if (Project && Project.is_archived) {
+        logger.warn("Tentative d'ajout d'un profil à un projet archivé", { projectId });
         return res.status(403).json({
           error: "Impossible d'ajouter un profil à un projet archivé.",
         });
@@ -95,6 +103,7 @@ exports.createProfile = async (req, res) => {
       status: baseData.status || "profile", // Default to 'profile' if not provided
     }; // Create the profile with the processed data
     const Profile = await profile.create(processedData); // processedData already has fk_project from baseData
+    logger.info("Profil créé avec succès", { id: Profile.id });
     res.status(201).json({
       ...Profile.toJSON(),
       technicalSkills: processedData.technicalSkills
@@ -108,23 +117,26 @@ exports.createProfile = async (req, res) => {
         : [],
     });
   } catch (error) {
-    console.error("Error creating profile:", error);
+    logger.error("Erreur lors de la création du profil", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Update profile
 exports.updateProfile = async (req, res) => {
+  logger.info("[PUT] /profiles/:id - Mise à jour d'un profil", { id: req.params.id, body: req.body });
   try {
     const Profile = await profile.findByPk(req.params.id);
 
     if (!Profile) {
+      logger.warn("Profil non trouvé pour mise à jour", { id: req.params.id });
       return res.status(404).json({ error: "Profile not found" });
     }
 
     // Vérifier si le projet parent est archivé
     const Project = await project.findByPk(Profile.fk_project);
     if (Project && Project.is_archived) {
+      logger.warn("Tentative de modification d'un profil d'un projet archivé", { projectId: Project.id });
       return res.status(403).json({
         error: "Impossible de modifier un profil d'un projet archivé.",
       });
@@ -136,7 +148,7 @@ exports.updateProfile = async (req, res) => {
       processedData.status = req.body.status;
     }
     await Profile.update(processedData);
-
+    logger.info("Profil mis à jour avec succès", { id: Profile.id });
     res.json({
       ...Profile.toJSON(),
       technicalSkills: req.body.technicalSkills,
@@ -145,36 +157,44 @@ exports.updateProfile = async (req, res) => {
       status: processedData.status || Profile.status,
     });
   } catch (error) {
-    console.error("Error updating profile:", error);
+    logger.error("Erreur lors de la mise à jour du profil", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Set profile status only
 exports.setProfileStatus = async (req, res) => {
+  logger.info("[PATCH] /profiles/:id/status - Mise à jour du statut d'un profil", { id: req.params.id, status: req.body.status });
   try {
     const Profile = await profile.findByPk(req.params.id);
     if (!Profile) {
+      logger.warn("Profil non trouvé pour mise à jour du statut", { id: req.params.id });
       return res.status(404).json({ error: "Profile not found" });
     }
     // Only update status
     await Profile.update({ status: req.body.status });
+    logger.info("Statut du profil mis à jour", { id: req.params.id, status: req.body.status });
     res.json({ status: req.body.status });
   } catch (error) {
-    console.error("Error updating profile status:", error);
+    logger.error("Erreur lors de la mise à jour du statut du profil", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };
 
 // Delete profile
 exports.deleteProfile = async (req, res) => {
+  logger.info("[DELETE] /profiles/:id - Suppression d'un profil", { id: req.params.id });
   try {
     const Profile = await profile.findByPk(req.params.id);
-    if (!Profile) return res.status(404).json({ error: "Profile not found" });
+    if (!Profile) {
+      logger.warn("Profil non trouvé pour suppression", { id: req.params.id });
+      return res.status(404).json({ error: "Profile not found" });
+    }
 
     // Vérifier si le projet parent est archivé
     const Project = await project.findByPk(Profile.fk_project);
     if (Project && Project.is_archived) {
+      logger.warn("Tentative de suppression d'un profil d'un projet archivé", { projectId: Project.id });
       return res.status(403).json({
         error: "Impossible de supprimer un profil d'un projet archivé.",
       });
@@ -197,6 +217,7 @@ exports.deleteProfile = async (req, res) => {
       });
 
       if (publishedPostings.length > 0) {
+        logger.warn("Suppression refusée : profils avec offres publiées", { id: req.params.id });
         return res.status(403).json({
           error:
             "Ce profil ne peut pas être supprimé car il contient des offres d'emploi actuellement publiées. Veuillez d'abord retirer ces publications avant de procéder à la suppression.",
@@ -205,9 +226,10 @@ exports.deleteProfile = async (req, res) => {
     }
 
     await Profile.destroy();
+    logger.info("Profil supprimé avec succès", { id: req.params.id });
     res.status(204).end();
   } catch (error) {
-    console.error("Error deleting profile:", error);
+    logger.error("Erreur lors de la suppression du profil", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Database error" });
   }
 };

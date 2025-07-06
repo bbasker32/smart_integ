@@ -8,8 +8,15 @@ const {
   deleteProfile,
   setProfileStatus,
 } = require("../controllers/profileController");
+const {
+  authenticateToken,
+  requireAdmin,
+  requireOwnershipOrAdmin,
+} = require("../middlewares/auth");
 
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.get("/", getAllProfiles);
 router.get("/:id", getProfile);

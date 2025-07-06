@@ -3,8 +3,10 @@ const { profile, JobOffer, JobPosting } = require("../models");
 const axios = require("axios");
 const { spawn } = require("child_process");
 const path = require("path");
+const logger = require('../utils/logger');
 
 exports.exportDescription = async (req, res) => {
+  logger.info("[POST] /publications/export-description - Export de description", { body: req.body });
   const { profileId, description } = req.body;
 
   try {
@@ -41,13 +43,15 @@ exports.exportDescription = async (req, res) => {
       message: created ? "Description exported" : "Description updated",
       jobOfferId: jobOffer.id,
     });
+    logger.info("Description exportée ou mise à jour", { jobOfferId: jobOffer.id });
   } catch (error) {
-    console.error("Export error:", error);
+    logger.error("Erreur lors de l'export de la description", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Failed to export description" });
   }
 };
 
 exports.getJobOffer = async (req, res) => {
+  logger.info("[GET] /publications/job-offer/:profileId - Récupération d'une offre d'emploi", { profileId: req.params.profileId });
   try {
     const { profileId } = req.params;
 
@@ -60,13 +64,15 @@ exports.getJobOffer = async (req, res) => {
     }
 
     res.json(jobOffer);
+    logger.info("JobOffer récupéré avec succès", { profileId: req.params.profileId });
   } catch (error) {
-    console.error("Error fetching job offer:", error);
+    logger.error("Erreur lors de la récupération du job offer", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Failed to fetch job offer" });
   }
 };
 
 exports.generateClassic = async (req, res) => {
+  logger.info("[POST] /publications/generate-classic - Génération classique", { body: req.body });
   try {
     const Profile = await profile.findByPk(req.body.profileId);
     const outputLangue = req.body.outputLangue;
@@ -84,13 +90,15 @@ exports.generateClassic = async (req, res) => {
     );
 
     res.json({ preview: aiResponse.data.preview });
+    logger.info("Génération classique réussie", { profileId: req.body.profileId });
   } catch (error) {
-    console.error("Classic generation error:", error);
+    logger.error("Erreur lors de la génération classique", { error: error.message, stack: error.stack });
     res.status(500).json({ error: "Classic generation failed" });
   }
 };
 
 exports.generatePlatformPreview = async (req, res) => {
+  logger.info("[POST] /publications/generate-platform-preview - Génération preview plateforme", { body: req.body });
   try {
     const { plateform, profileId, options } = req.body;
     const Profile = await profile.findByPk(profileId);
@@ -118,13 +126,15 @@ exports.generatePlatformPreview = async (req, res) => {
     );
 
     res.json({ preview: aiResponse.data.preview });
+    logger.info("Génération preview plateforme réussie", { profileId: req.body.profileId, plateform: req.body.plateform });
   } catch (error) {
-    console.error("Platform preview error:", error);
-    res.status(500).json({ error: `${plateform} preview failed` });
+    logger.error("Erreur lors de la génération preview plateforme", { error: error.message, stack: error.stack });
+    res.status(500).json({ error: `${req.body.plateform} preview failed` });
   }
 };
 
 exports.triggerLinkedInPost = async (req, res) => {
+  logger.info("[POST] /publications/trigger-linkedin-post - Publication LinkedIn", { body: req.body });
   const { description, url: companyUrl, profileId } = req.body;
 
   try {
@@ -185,8 +195,9 @@ exports.triggerLinkedInPost = async (req, res) => {
 
     // ✅ Réponse immédiate (le script continue en arrière-plan)
     return res.status(200).json({ success: true });
+    logger.info("Publication LinkedIn déclenchée avec succès", { profileId: req.body.profileId });
   } catch (err) {
-    console.error("❌ Erreur lors de la publication :", err);
+    logger.error("Erreur lors de la publication LinkedIn", { error: err.message, stack: err.stack });
     return res.status(500).json({ error: "Internal server error" });
   }
 };

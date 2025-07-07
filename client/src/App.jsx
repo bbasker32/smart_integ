@@ -5,7 +5,7 @@ import ProfilePage from "./screens/ProfilePage/ProfilePage";
 import { UserManagement } from "./screens/UserManagement/UserManagement";
 import { VueProjetsProfile } from "./screens/VueProjetsProfile/VueProjetsProfile";
 import { VueProjectPublication } from "./screens/VueProjectPublication/VueProjectPublication";
-import { VueProjectCandidate } from "./screens/VueProjectCandidate/VueProjectCandidate";
+import { VueProjectCandidate } from "./screens/VueProjectCandidate copy/VueProjectCandidate";
 import { AppLayout } from "./components/Layout/AppLayout";
 import CVUpload from "./components/CVUpload";
 import { Toaster } from "react-hot-toast";
@@ -22,6 +22,8 @@ function ProtectedRoute({ children }) {
   const forceChangePassword =
     localStorage.getItem("forceChangePassword") === "true";
   const currentPath = window.location.pathname;
+
+  console.log('ProtectedRoute', { isAuthenticated, forceChangePassword, currentPath });
 
   if (!isAuthenticated) {
     console.log("ProtectedRoute - Redirecting to /login");
@@ -79,7 +81,7 @@ function App() {
             path="/profile/:profileId/publication"
             element={<VueProjectPublication />}
           />
-          <Route path="/candidate" element={<VueProjectCandidate />} />
+          <Route path="/profile/:profileId/candidate" element={<VueProjectCandidate />} />
 
           {/* Route pour la gestion des utilisateurs */}
           <Route path="/users" element={<UserManagement />} />

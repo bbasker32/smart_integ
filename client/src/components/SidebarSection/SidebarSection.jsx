@@ -21,6 +21,7 @@ import { AddProjectModal } from "../modals/AddProjectModal";
 import { Input } from "../ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useUser } from "../../contexts/UserContext";
+import { useProfile } from "../../contexts/ProfileContext";
 
 export const SidebarSection = ({
   isOpen = false,
@@ -43,6 +44,7 @@ export const SidebarSection = ({
   const { user, loading } = useUser(); // Get user and loading from context
   const userRole = user.role; // Get role from context
   const [hasFetched, setHasFetched] = useState(false);
+  const { activeProfileId, setActiveProfileId, activeProfileTitle } = useProfile();
 
   // Fetch projects with filters
   const fetchProjects = async (filters = {}) => {
@@ -148,6 +150,7 @@ export const SidebarSection = ({
 
   const handleProfileClick = (profileId) => {
     setSelectedProfile(profileId);
+    setActiveProfileId(profileId);
     // Find the profile object to get its title
     let profileName = "";
     for (const profiles of Object.values(projectProfiles)) {
@@ -304,6 +307,14 @@ export const SidebarSection = ({
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
+        {/* Affichage du profil actif */}
+        {/* {activeProfileId && (
+          <div className="mb-4 p-2 bg-blue-50 rounded text-xs text-blue-900">
+            <b>Profil actif :</b> ID {activeProfileId} <br />
+            <b>Titre :</b> {activeProfileTitle || '...'}
+          </div>
+        )} */}
+
         {/* Dashboard Button */}
         <div className="w-[242px] h-[39px] rounded-[10px] overflow-hidden flex items-center px-5 mb-6 hover:bg-[#ecf3ff] transition-colors duration-300 cursor-pointer">
           <LayoutGridIcon className="w-5 h-5 text-[#474444]" />

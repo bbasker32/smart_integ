@@ -1,7 +1,12 @@
 import axios from "axios";
+import { useToast } from '../hooks/useToast';
 
-const API_URL = "http://localhost:5000/api";
 
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+if (!API_URL) {
+  console.error('VITE_API_BASE_URL is not defined in environment variables');
+}
 // Create axios instance with default config
 const api = axios.create({
   baseURL: API_URL,

@@ -6,7 +6,6 @@ import { UserProvider } from "./contexts/UserContext";
 import App from "./App";
 
 createRoot(document.getElementById("app")).render(
-  <StrictMode>
     <BrowserRouter>
       <UserProvider>
         <ProfileProvider>
@@ -14,5 +13,4 @@ createRoot(document.getElementById("app")).render(
         </ProfileProvider>
       </UserProvider>
     </BrowserRouter>
-  </StrictMode>
 );

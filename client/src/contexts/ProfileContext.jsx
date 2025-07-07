@@ -23,7 +23,7 @@ export const ProfileProvider = ({ children }) => {
     const fetchProfileData = async () => {
       if (activeProfileId) {
         try {
-          const data = await profileService.getProfileById(activeProfileId);
+          const data = await profileService.getProfile(activeProfileId);
           setActiveProfileData(data);
           setActiveProfileTitle(data?.title || null);
         } catch (error) {

@@ -8,7 +8,15 @@ const {
   getProjectProfiles,
 } = require("../controllers/projectController");
 const { searchProjects } = require("../controllers/searchController");
+const {
+  authenticateToken,
+  requireAdmin,
+  requireOwnershipOrAdmin,
+} = require("../middlewares/auth");
+
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.get("/", getAllProjects);
 router.post("/", createProject);

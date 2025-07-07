@@ -33,7 +33,7 @@ exports.createCandidate = catchAsync(async (req, res) => {
   const profile = await db.profile.findByPk(req.body.fk_profile, {
     include: [{
       model: db.project,
-      as: 'project'
+      as: 'Project'
     }]
   });
 

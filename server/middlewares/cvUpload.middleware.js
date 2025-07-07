@@ -5,6 +5,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const path = require('path');
 const db = require('../models');
 const fs = require('fs');
+const logger = require('../utils/logger');
 
 // Configuration du client S3
 const s3 = new S3Client({
@@ -22,20 +23,30 @@ const storage = multerS3({
   contentType: multerS3.AUTO_CONTENT_TYPE,
   key: async function (req, file, cb) {
     try {
+      logger.info('cvUpload.middleware.js: Début key()');
+      logger.info('cvUpload.middleware.js: req.body.fk_profile =', req.body.fk_profile);
       // Récupérer les informations du profil
       const profile = await db.profile.findByPk(req.body.fk_profile, {
         include: [{
           model: db.project,
-          as: 'project'
+          as: 'Project'
         }]
       });
 
+      logger.info('cvUpload.middleware.js: Résultat db.profile.findByPk =', profile);
+
       if (!profile) {
+        logger.error('cvUpload.middleware.js: Profil non trouvé pour fk_profile =', req.body.fk_profile);
         return cb(new Error('Profil non trouvé'));
       }
 
+      if (!profile.Project) {
+        logger.error('cvUpload.middleware.js: Project (profil lié) est undefined pour le profil', profile.id);
+        return cb(new Error('Le projet associé au profil est introuvable.'));
+      }
+
       // Garder le nom d'origine mais remplacer les espaces par des underscores
-      const projectName = profile.project.title.replace(/\s+/g, '_');
+      const projectName = profile.Project.title.replace(/\s+/g, '_');
       const profileName = profile.title.replace(/\s+/g, '_');
       const profileId = profile.id;
       const timestamp = Date.now();
@@ -44,8 +55,10 @@ const storage = multerS3({
 
       // Nouvelle structure S3: cvs/ProjectName/ProfileName/platforme/timestamp_baseName_profileId.ext
       const s3Key = `cvs/${projectName}/${profileName}/local/${timestamp}_${baseName}_${profileId}${ext}`;
+      logger.info('cvUpload.middleware.js: s3Key généré =', s3Key);
       cb(null, s3Key);
     } catch (error) {
+      logger.error('cvUpload.middleware.js: Erreur dans key()', error);
       cb(error);
     }
   }

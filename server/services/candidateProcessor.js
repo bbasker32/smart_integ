@@ -80,6 +80,7 @@ async function processCandidate(candidate, authToken, skipSensitiveInfo = true) 
         current_position: response.data.current_position || null,
         score_value: response.data.score_value || 0,
         score_description: response.data.score_description || null,
+        summary: response.data.summary || null,
         status: 'traited'
       };
 

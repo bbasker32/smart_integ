@@ -451,7 +451,16 @@ export const CandidatesSection = () => {
               <div className="space-y-4">
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
                   <h3 className="font-semibold mb-2 text-gray-700">Education</h3>
-                  <p className="text-gray-700">{selectedCandidate.education || 'No education information available'}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedCandidate.education
+                      ? selectedCandidate.education.split(',').map((formation, i) => (
+                          <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">
+                            {formation.trim()}
+                          </span>
+                        ))
+                      : <p className="text-gray-500">No education information available</p>
+                    }
+                  </div>
                 </div>
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
                   <h3 className="font-semibold mb-2 text-gray-700">Certifications</h3>

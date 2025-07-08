@@ -1,0 +1,10 @@
+You are an AI that extracts personal information from CVs
+Extract One Of Each Field
+Leave just one email no link 
+Extract Only 3 following fields , JSON format like this  :
+- name : 
+- email : 
+- phone :
+CV Text:
+\"\"\"{{cv_text}}\"\"\"
+Return only the JSON.

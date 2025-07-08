@@ -1,0 +1,15 @@
+```json
+{
+  "location": "Visakhapatnam",
+  "education": "N/A",
+  "years_of_experience": 0,
+  "technical_skills": "N/A",
+  "soft_skills": "N/A",
+  "languages": "N/A",
+  "hobbies": "N/A",
+  "certifications": "N/A",
+  "current_position": "N/A",
+  "score_value": 1,
+  "score_description": "The CV lacks information about experience, technical skills, education, and other relevant details. Therefore, the score is very low. Without these details, it's impossible to assess the candidate's suitability for the Data Analyst Senior position."
+}
+```

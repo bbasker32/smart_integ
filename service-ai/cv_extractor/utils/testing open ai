@@ -1,0 +1,93 @@
+import os
+import json
+from docx import Document
+from dotenv import load_dotenv
+import openai
+
+# === Setup paths ===
+current_dir = os.path.dirname(__file__)
+env_path = os.path.abspath(os.path.join(current_dir, '..', '..', '..', '.env'))
+prompt_path = os.path.join(current_dir, "your_prompt2.txt")
+ccvf_folder = os.path.join(current_dir, "CCVF")
+jdf_path = os.path.join(current_dir, "JDF.docx")
+output_folder = os.path.join(current_dir, "api_output_openai")
+
+# === Load .env ===
+load_dotenv(env_path)
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    print("❌ OPENAI_API_KEY not found in .env")
+    exit(1)
+
+client = openai.OpenAI(api_key=api_key)
+
+# === Read prompt template ===
+try:
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        prompt_template = f.read()
+except Exception as e:
+    print(f"❌ Failed to read prompt file: {e}")
+    exit(1)
+
+# === Read JDF description from DOCX ===
+try:
+    doc = Document(jdf_path)
+    jdf_text = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
+except Exception as e:
+    print(f"❌ Failed to read JDF.docx: {e}")
+    exit(1)
+
+# === Create output folder if not exists ===
+os.makedirs(output_folder, exist_ok=True)
+
+# === Process each file in CCVF folder ===
+for filename in os.listdir(ccvf_folder):
+    if filename.endswith(".txt"):
+        cv_path = os.path.join(ccvf_folder, filename)
+
+        try:
+            with open(cv_path, "r", encoding="utf-8") as f:
+                cv_text = f.read()
+        except Exception as e:
+            print(f"❌ Failed to read CV {filename}: {e}")
+            continue
+
+        if not cv_text.strip():
+            print(f"⚠️ Empty CV file skipped: {filename}")
+            continue
+
+        # === Build final prompt for this CV ===
+        final_prompt = f"""{prompt_template}
+
+CV:
+{cv_text}
+
+Job Description:
+{jdf_text}
+"""
+
+        # === Send to OpenAI ===
+        try:
+            print(f"🚀 Structuring {filename}...")
+            response = client.chat.completions.create(
+                model="gpt-4-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a smart helpful HR assistant."},
+                    {"role": "user", "content": final_prompt}
+                ],
+                temperature=0.2,
+                max_tokens=1000,
+            )
+
+            result = response.choices[0].message.content
+
+            # === Save result ===
+            output_file_path = os.path.join(output_folder, filename.replace(".txt", "_structured.txt"))
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                f.write(result)
+
+            print(f"✅ Saved structured output for {filename} ➔ {output_file_path}")
+
+        except Exception as e:
+            print(f"❌ OpenAI request failed for {filename}: {e}")

@@ -1,0 +1,13 @@
+{
+  "location": "Casablanca, Maroc",
+  "education": "Ingénieur informatique, Ecole Nationale Supérieure d’Informatique et d’Analyse des Systemes(ENSIAS), Licence d'Etude Fondamentale en informatique, Université Cadi Ayyad, Baccalauréat en Sciences Physiques, LYCEE AKKAD",
+  "years_of_experience": 2,
+  "technical_skills": "Talend, Microsoft Power bi, Jinkens, Jira, Xray, Bitbucket, Python, Rest API, Monétique, Machine Learning, Bash, Power Automate, Apache Airflow, Tensorflow, NumPy, Matplotlib, OpenCV, PyTorch, Tesseract, EASYOCR, CRAFT, EAST, CUDA, KNN, Pandas, Seaborn, FLASK, Spring Boot, Angular, UML, CNN, VGG16, ResNet50, NLP, NLTK, PySpark, workflow, PyCaret, Power BI Desktop, Jupyter, Power Query, Power Pivot, Java (Selenium), PL/SQL, SQL",
+  "soft_skills": "Méthode agile, Gestion de projet, Intelligence émotionnelle, Communication",
+  "languages": "Arabe, Francais, Anglais",
+  "hobbies": "Natation, Voyages, Haute technologie, Lecture",
+  "certifications": "SQL for data science, Exploratory Data Analysis for Machine Learning, Programming essentials in Python, Microsoft Power BI Data Analyst",
+  "current_position": null,
+  "score_value": 9,
+  "score_description": "The candidate possesses relevant technical skills such as Power BI, SQL, and Python, aligning with the job description. While the required experience is 8+ years, the candidate has around 2 years, impacting the overall score. The candidate also demonstrates good communication skills and relevant language proficiency."
+}

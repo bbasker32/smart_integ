@@ -1,0 +1,14 @@
+{
+  "location": "Maroc",
+  "education": "Master en Architectures et Applications des Systèmes d'Information, Licence de sciences et techniques en informatique, Diplôme d'Etudes Universitaires en Sciences et Techniques",
+  "years_of_experience": 2,
+  "technical_skills": "UiPath Studio, REFramework, Java, JEE, VB.NET, C#, Python, SQL, PLSQL, Spring, Spring Boot, Hibernate, Angular, Microsoft SQL Server, MySQL, Oracle Database, WordPress, Elementor, WooCommerce, Machine Learning, Web Scraping, NumPy, NLTK, Talend, Visual Studio, Power BI, Excel",
+  "soft_skills": "Analyse de données, Analyse de la faisabilité d'automatisation, Visualisation, Reporting, Modélisation des processus métier, Implémentation et développement de processus automatisés, Maintenance des processus automatisés, Conception de solutions, Documentation des workflows automatisés",
+  "languages": "Arabe, Tamazight, Français, Anglais",
+  "hobbies": "Non spécifié",
+  "certifications": "RPA Developer Foundation - UiPath, RPA Developer Advanced - UiPath, RPA Essentials for Students (Automation 360) - Automation Anywhere University, Red Hat Application Development I: Programming in Java EE 7.0 - Red Hat Academy, Essentiels de programmation en Python - Cisco Networking Academy",
+  "current_position": "Consultant RPA at ALTEN MAROC",
+  "score_value": 1,
+  "score_description": "Le score est basé principalement sur la correspondance de l'expérience, qui est limitée à 2 ans par rapport à l'exigence de 8 ans pour le poste de Data Analyst Sénior.",
+  "summary": "Développeur RPA avec une expérience de 2 ans, compétences techniques variées et formations solides en informatique. Certifié dans le domaine de l'automatisation des processus. Maîtrise de plusieurs langues et prêt à relever de nouveaux défis dans le secteur de l'analyse de données."
+}

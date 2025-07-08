@@ -1,0 +1,3 @@
+Extract the full name, email address, and phone number from the following CV text. Return the result as JSON with keys: name, email, and phone.
+
+{{cv_text}}

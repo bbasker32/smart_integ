@@ -38,6 +38,9 @@ app.use("/api/postings", postingsRoutes);
 app.use("/api", cvUploadRoutes);
 app.use("/api/candidates", candidateRoutes);
 
+
+
+
 app.listen(port, () => {
   console.log(`✅ Server running at http://localhost:${port}`);
 });

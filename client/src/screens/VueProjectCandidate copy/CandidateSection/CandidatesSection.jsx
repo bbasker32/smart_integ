@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { CustomTabs } from '../../../components/custom-tabs/CustomTabs';
@@ -17,6 +18,8 @@ import { ModalLoading } from '../../../components/modals/ModalLoading';
 
 export const CandidatesSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const { profileId } = useParams();
   const [importTab, setImportTab] = useState('local');
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -58,10 +61,10 @@ export const CandidatesSection = () => {
   );
 
   const refreshCandidates = useCallback(async () => {
-    if (activeProfileId) {
+    if (profileId) {
       try {
         setIsLoadingCandidates(true);
-        const fetchedCandidates = await candidateService.getTratedCandidatesByProfile(activeProfileId);
+        const fetchedCandidates = await candidateService.getTratedCandidatesByProfile(profileId);
         setCandidates(fetchedCandidates);
         if (fetchedCandidates.length > 0) {
           setSelectedCandidate(fetchedCandidates[0]);
@@ -75,7 +78,7 @@ export const CandidatesSection = () => {
         setIsLoadingCandidates(false);
       }
     }
-  }, [activeProfileId]);
+  }, [profileId]);
 
   useEffect(() => {
     refreshCandidates();
@@ -83,7 +86,7 @@ export const CandidatesSection = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeProfileId]);
+  }, [profileId]);
 
   useEffect(() => {
     const total = notDiscarded.length;
@@ -101,7 +104,26 @@ export const CandidatesSection = () => {
     { value: "contrat", label: "Contrat" }
   ];
 
-  const handleTabChange = (value) => {};
+  const handleTabChange = async (value) => {
+    if (profileId) {
+      try {
+        await profileService.setProfileStatus(profileId, value);
+      } catch (e) {
+        // Optionally handle error
+      }
+    }
+    if (value === "publication") {
+      navigate(`/profile/${profileId}/publication`);
+    } else if (value === "candidate") {
+      navigate(`/profile/${profileId}/candidate`);
+    } else if (value === "entretien") {
+      navigate(`/profile/${profileId}/entretien`);
+    } else if (value === "contrat") {
+      navigate(`/profile/${profileId}/contrat`);
+    } else {
+      navigate(`/profile/${profileId}`);
+    }
+  };
 
   const handleViewCV = async (e, candidateId) => {
     e.stopPropagation();
@@ -218,7 +240,55 @@ export const CandidatesSection = () => {
   return (
     <div className="p-6 border border-[#EAE7E7] rounded-[5px]">
       <ModalLoading open={isLoadingCandidates} progress={progress} />
+       {/* Top row inputs
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+              <div className="space-y-2">
+                <label className="block font-['Montserrat',Helvetica] text-base md:text-lg tracking-[0.10px] leading-6">
+                  Services
+                </label>
+                <Input
+                  name="projectServices"
+                  value={formData.projectServices}
+                  disabled
+                  className="h-10 border-[#dfd4d4] font-['Montserrat',Helvetica] text-sm text-[#666666] bg-gray-50"
+                />
+              </div>
 
+              <div className="space-y-2">
+                <label className="block font-['Montserrat',Helvetica] text-base md:text-lg tracking-[0.10px] leading-6">
+                  Resp
+                </label>
+                <Input
+                  name="projectResp"
+                  value={formData.projectResp}
+                  disabled
+                  className="h-10 border-[#dfd4d4] font-['Montserrat',Helvetica] text-sm text-[#666666] bg-gray-50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block font-['Montserrat',Helvetica] text-base md:text-lg tracking-[0.10px] leading-6">
+                  Status
+                </label>
+                <Select
+                  value={formData.projectStatus}
+                  onValueChange={(value) =>
+                    handleSelectChange("projectStatus", value)
+                  }
+                  disabled
+                >
+                  <SelectTrigger className="h-10 border-[#dfd4d4] font-['Montserrat',Helvetica] text-sm text-[#666666] bg-gray-50">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="En Cours">En Cours</SelectItem>
+                    <SelectItem value="Terminé">Terminé</SelectItem>
+                    <SelectItem value="En Attente">En Attente</SelectItem>
+                    <SelectItem value="Annulé">Annulé</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div> */}
       {/* Main Tabs */}
       <div className="mb-8">
         <CustomTabs
@@ -236,12 +306,12 @@ export const CandidatesSection = () => {
         >
           Importation local
         </Button>
-        <Button
+        {/* <Button
           className={`px-6 py-2 font-medium text-sm border-none focus:outline-none rounded-[10px] shadow-md ${importTab === 'plateformes' ? 'bg-[#808080] text-[#222]' : 'bg-[#BDBDBD] text-[#222]'}`}
           onClick={() => setImportTab('plateformes')}
         >
           Importation plateformes
-        </Button>
+        </Button> */}
       </div>
 
       {/* Champ de recherche global */}
@@ -543,7 +613,7 @@ export const CandidatesSection = () => {
       <ImportLocalModal
         isOpen={isImportLocalModalOpen}
         onClose={() => setIsImportLocalModalOpen(false)}
-        profileId={activeProfileId}
+        profileId={profileId}
         onCandidatesCreated={refreshCandidates}
       />
     </div>

@@ -65,7 +65,7 @@ server/uploads/
 server/migration_test/
 server/models_test/
 
-models/
+service-ai/models/
 *.gguf
 *.pt
 *.h5

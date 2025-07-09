@@ -1,0 +1,17 @@
+{
+  "name": "Mohamed Laamimach",
+  "email": "medlaam@hotmail.com",
+  "phone": "0623756855",
+  "location": "Tétouan",
+  "education": "Master Management des systèmes d'informations, Licence fondamental parcours gestion, Baccalauréat Sciences Maths B",
+  "years_of_experience": 3,
+  "technical_skills": "PostgreSQL, MySQL, VS Code, IntelliJ IDEA, Git, Java, Java Swing, UML, Merise, HTML, CSS, PHP",
+  "soft_skills": "Rigoureux, Dynamique",
+  "languages": "Arabe, Français, Anglais, Espagnol",
+  "hobbies": "Lecture, Auto-formation",
+  "certifications": "DELF B2",
+  "summary": "Étudiant en Master Management des systèmes d'informations avec une expérience en développement web et gestion de projets IT. Actuellement à la recherche d'un stage pour un projet de fin d'études.",
+  "score_value": 2,
+  "score_description": "Le candidat possède des compétences techniques en SQL et gestion de données, mais manque d'expérience en Power BI et en analyse de données avancée requise pour le poste. De plus, il n'a pas les 8 ans d'expérience demandés.",
+  "current_position": "Étudiant en Master Management des systèmes d'informations"
+}

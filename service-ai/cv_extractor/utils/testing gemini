@@ -1,0 +1,94 @@
+import os
+import json
+from docx import Document
+from dotenv import load_dotenv
+import google.generativeai as genai
+import time
+# === Setup paths ===
+current_dir = os.path.dirname(__file__)
+env_path = os.path.abspath(os.path.join(current_dir, '..', '..', '..', '.env'))
+prompt_path = os.path.join(current_dir, "your_prompt2.txt")
+ccvf_folder = os.path.join(current_dir, "CCVF")
+jdf_path = os.path.join(current_dir, "JDF.docx")
+output_folder = os.path.join(current_dir, "api_output_gemini")
+
+# === Load .env and configure Gemini ===
+load_dotenv(env_path)
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+
+if not gemini_api_key:
+    print("❌ GEMINI_API_KEY not found in .env")
+    exit(1)
+
+genai.configure(api_key=gemini_api_key)
+model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+# === Load prompt template ===
+try:
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        prompt_template = f.read()
+except Exception as e:
+    print(f"❌ Failed to read prompt file: {e}")
+    exit(1)
+
+# === Load JDF description from DOCX ===
+try:
+    doc = Document(jdf_path)
+    jdf_text = "\n".join([p.text for p in doc.paragraphs if p.text.strip()])
+except Exception as e:
+    print(f"❌ Failed to read JDF.docx: {e}")
+    exit(1)
+
+# === Create output folder if not exists ===
+os.makedirs(output_folder, exist_ok=True)
+
+# === Loop through CVs in CCVF ===
+for filename in os.listdir(ccvf_folder):
+    if filename.endswith(".txt"):
+        cv_path = os.path.join(ccvf_folder, filename)
+
+        try:
+            with open(cv_path, "r", encoding="utf-8") as f:
+                cv_text = f.read()
+        except Exception as e:
+            print(f"❌ Failed to read CV {filename}: {e}")
+            continue
+
+        if not cv_text.strip():
+            print(f"⚠️ Empty CV file skipped: {filename}")
+            continue
+
+        # === Build prompt ===
+        final_prompt = f"""{prompt_template}
+
+CV:
+{cv_text}
+
+Job Description:
+{jdf_text}
+"""
+
+        # === Send to Gemini ===
+        try:
+            print(f"🚀 Structuring {filename} with Gemini...")
+
+            response = model.generate_content(
+                final_prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.2,
+                    max_output_tokens=2048
+                )
+            )
+
+            result = response.text
+
+            # === Save result ===
+            output_file_path = os.path.join(output_folder, filename.replace(".txt", "_structured.txt"))
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                f.write(result)
+
+            print(f"✅ Saved structured output for {filename} ➔ {output_file_path}")
+            time.sleep(35) 
+        except Exception as e:
+            print(f"❌ Gemini request failed for {filename}: {e}")
+            time.sleep(35) 

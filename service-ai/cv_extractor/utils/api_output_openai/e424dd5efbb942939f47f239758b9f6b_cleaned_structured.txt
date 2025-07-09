@@ -1,0 +1,15 @@
+```json
+{
+  "location": "CASA, Maroc",
+  "education": "MASTER2(BAC+5) EN MANAGEMENT des systemes d’information et decision ENSAM CASA, MASTER1(BAC+4) EN MANAGEMENT des systemes d’information et decision ENSAM CASA, Licence professionnelle (BAC+3) en administration de bases de données et technologies WEB, technicien spécialisé en développement Multimédia ISTA NTIC 2, baccalauréats option phisique-chimie",
+  "years_of_experience": 7,
+  "technical_skills": "Développement, algorithmique, Administration de bases de données oracle, SQL server, BI, ERP(ODDO), BIG DATA, SCRUM, ITIL V3, UiPath, AutomationAnywhere, Oracle 10,11g, Eclipse neon 2, android studio, JAVA, PHP, C, HTML, CSS, VMWARE, SONAR, JUNIT, MYSQL, UiPath Orchestrator, JIRA, GIT, suite office (Word, Excel, PowerPoint), Windows, Linux",
+  "soft_skills": "Management, gestion d’équipe, Travail en équipe, Démarche qualité, Organisation, Précision, Communication scientifique, Rigueur, Sens du relationnel, Ponctualité, Hautes technologies",
+  "languages": "Français, Anglais, Arabe",
+  "hobbies": "Football, lecture, cinéma, voyages",
+  "certifications": "UiPath RPA Déveloper Advanced level 3, AutomationAnywhere Advanced RPA Professional",
+  "current_position": "RPA SOFTWARE ENGINEER LEAD",
+  "score_value": 3,
+  "score_description": "The candidate's experience in RPA engineering and some technical skills align with the data analysis role, but there's a significant mismatch in the core requirements like Power BI and data pipeline management. The candidate's RPA background and soft skills contribute a small amount to the overall suitability."
+}
+```

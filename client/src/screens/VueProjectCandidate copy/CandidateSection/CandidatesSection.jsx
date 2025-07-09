@@ -267,6 +267,7 @@ export const CandidatesSection = () => {
         >
           Importation local
         </Button>
+        </div>
 
         {/* <Button
 
@@ -276,311 +277,312 @@ export const CandidatesSection = () => {
       </div>
 
       {/* Champ de recherche global */}
-      <div className="mb-4 flex justify-start">
-        <Input
-          type="text"
-          placeholder="Rechercher par nom ou prénom..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          className="w-full max-w-xs"
-        />
-      </div>
-
-      {/* Layout */}
-      <div className="grid grid-cols-[1fr_2fr] gap-6 w-full">
-        {/* Candidate Table */}
-        <div>
-          <div className="bg-white rounded-lg border border-gray-100 p-2">
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="candidate-table">
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    {/* Header */}
-                    <div className="flex w-full text-xs font-medium text-gray-600 tracking-wide border-b border-gray-200 bg-gray-200 rounded-t-md" style={{paddingTop: '8px', paddingBottom: '8px'}}>
-                      <div className="w-12 py-2 px-3">Order</div>
-                      <div className="flex-1 py-2 px-3">Nom Complet</div>
-                      <div className="w-24 py-2 px-3">Score/10</div>
-                      <div className="w-32 py-2 px-3">Type Importation</div>
-                      <div className="w-28 py-2 px-3">Actions</div>
-                    </div>
-                    {/* Draggable notDiscarded candidates */}
-                    {filteredNotDiscarded.map((candidate, index) => (
-                      <Draggable key={candidate.id} draggableId={candidate.id.toString()} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`flex w-full items-center transition-colors cursor-pointer ${selectedCandidate?.id === candidate.id ? 'bg-gray-50' : ''} hover:bg-gray-100 ${snapshot.isDragging ? 'ring-2 ring-blue-200' : ''}`}
-                            style={{ height: '38px', ...provided.draggableProps.style }}
-                            onClick={() => setSelectedCandidate(candidate)}
-                          >
-                            {/* Drag handle */}
-                            <div
-                              className="w-8 flex items-center justify-center cursor-grab select-none"
-                              {...provided.dragHandleProps}
-                              title="Drag to reorder"
-                              onClick={e => e.stopPropagation()}
-                            >
-                              <span className="text-lg text-gray-400 select-none">≡</span>
-                            </div>
-                            <div className="w-12 py-1 px-2 text-sm text-gray-800 font-normal">{(currentPage - 1) * pageSize + index + 1}</div>
-                            <div className="flex-1 py-1 px-2 text-sm text-gray-900 font-medium">{candidate.name}</div>
-                            <div className="w-24 py-1 px-2 text-sm flex items-center gap-1">{candidate.score_value}/10</div>
-                            <div className="w-32 py-1 px-2 text-sm text-gray-700">{candidate.type_importation || '-'}</div>
-                            <div className="w-28 py-1 px-2">
-                              <div className="flex items-center gap-2">
-                                <button
-                                  className={`p-1 rounded-full transition-colors ${candidate.status === 'validated' ? 'bg-green-50' : 'hover:bg-green-50'}`}
-                                  title="Valider"
-                                  onClick={e => { e.stopPropagation(); handleValidate(candidate.id, candidate.status); }}
-                                  disabled={loadingCandidateId === candidate.id}
-                                  style={{ lineHeight: 0 }}
-                                >
-                                  <SquareCheckBig size={18} className={candidate.status === 'validated' ? 'text-green-600' : 'text-gray-400'} />
-                                </button>
-                                <button
-                                  className={`p-1 rounded-full transition-colors ${candidate.status === 'discarded' ? 'bg-red-50' : 'hover:bg-red-50'}`}
-                                  title="Rejeter"
-                                  onClick={e => { e.stopPropagation(); handleReject(candidate.id, candidate.status); }}
-                                  disabled={loadingCandidateId === candidate.id}
-                                  style={{ lineHeight: 0 }}
-                                >
-                                  <SquareX size={18} className={candidate.status === 'discarded' ? 'text-red-600' : 'text-gray-400'} />
-                                </button>
-                                <button
-                                  onClick={e => handleViewCV(e, candidate.id)}
-                                  className="inline-flex items-center justify-center gap-1 text-blue-600 hover:text-blue-800 p-1 rounded-full transition-colors hover:bg-blue-50"
-                                  title="Voir CV"
-                                  style={{ lineHeight: 0 }}
-                                >
-                                  <FileText size={16} />
-                                  <span className="text-xs font-medium">CV</span>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                    {/* Static discarded candidates on last page */}
-                    {filteredDiscarded.map((candidate, index) => (
-                      <div
-                    key={candidate.id}
-                        className={`flex w-full items-center transition-colors cursor-pointer ${selectedCandidate?.id === candidate.id ? 'bg-gray-50' : ''} hover:bg-gray-100 opacity-60`}
-                        style={{ height: '38px' }}
-                    onClick={() => setSelectedCandidate(candidate)}
-                  >
-                        <div className="w-12 py-1 px-2 text-sm text-gray-800 font-normal">{notDiscarded.length + index + 1}</div>
-                        <div className="flex-1 py-1 px-2 text-sm text-gray-900 font-medium">{candidate.name}</div>
-                        <div className="w-24 py-1 px-2 text-sm flex items-center gap-1">{candidate.score_value}/10</div>
-                        <div className="w-32 py-1 px-2 text-sm text-gray-700">{candidate.type_importation || '-'}</div>
-                        <div className="w-28 py-1 px-2">
-                      <div className="flex items-center gap-2">
-                        <button
-                              className={`p-1 rounded-full transition-colors ${candidate.status === 'validated' ? 'bg-green-50' : 'hover:bg-green-50'}`}
-                          title="Valider"
-                              onClick={e => { e.stopPropagation(); handleValidate(candidate.id, candidate.status); }}
-                          disabled={loadingCandidateId === candidate.id}
-                              style={{ lineHeight: 0 }}
-                        >
-                              <SquareCheckBig size={18} className={candidate.status === 'validated' ? 'text-green-600' : 'text-gray-400'} />
-                        </button>
-                        <button
-                              className={`p-1 rounded-full transition-colors ${candidate.status === 'discarded' ? 'bg-red-50' : 'hover:bg-red-50'}`}
-                          title="Rejeter"
-                              onClick={e => { e.stopPropagation(); handleReject(candidate.id, candidate.status); }}
-                          disabled={loadingCandidateId === candidate.id}
-                              style={{ lineHeight: 0 }}
-                        >
-                              <SquareX size={18} className={candidate.status === 'discarded' ? 'text-red-600' : 'text-gray-400'} />
-                        </button>
-                        <button
-                              onClick={e => handleViewCV(e, candidate.id)}
-                              className="inline-flex items-center justify-center gap-1 text-blue-600 hover:text-blue-800 p-1 rounded-full transition-colors hover:bg-blue-50"
-                          title="Voir CV"
-                              style={{ lineHeight: 0 }}
-                        >
-                              <FileText size={16} />
-                          <span className="text-xs font-medium">CV</span>
-                        </button>
-                          </div>
-                        </div>
-                      </div>
-                ))}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-          </div>
+        <div className="mb-4 flex justify-start">
+          <Input
+            type="text"
+            placeholder="Rechercher par nom ou prénom..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="w-full max-w-xs"
+          />
         </div>
 
-        {/* Candidate Detail */}
-        <div>
-        
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <CustomStyledTabs
-              tabs={[
-                { value: 'candidat', label: 'Candidat' },
-                { value: 'experience', label: 'Experience' },
-                { value: 'formation', label: 'Formation' },
-                { value: 'competence', label: 'Compétence' },
-                { value: 'resume', label: 'Resume' }
-              ]}
-              defaultValue="candidat"
-              onValueChange={setDetailTab}
-              className="w-full mb-4"
-            />
-            {detailTab === 'candidat' && selectedCandidate && (
-              <div className="space-y-3 text-sm">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <p><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-900">{selectedCandidate.name}</span></p>
-                    <p><span className="font-semibold text-gray-700">Email:</span> <span className="text-gray-900">{selectedCandidate.email}</span></p>
-                    <p><span className="font-semibold text-gray-700">Phone:</span> <span className="text-gray-900">{selectedCandidate.phone || 'N/A'}</span></p>
-                    <p><span className="font-semibold text-gray-700">Location:</span> <span className="text-gray-900">{selectedCandidate.location || 'N/A'}</span></p>
-                    <p><span className="font-semibold text-gray-700">Current Position:</span> <span className="text-gray-900">{selectedCandidate.current_position || 'N/A'}</span></p>
-                  </div>
-                  <div className="space-y-2">
-                    <p><span className="font-semibold text-gray-700">Years of Experience:</span> <span className="text-gray-900">{selectedCandidate.years_of_experience || 'N/A'}</span></p>
-                    <p><span className="font-semibold text-gray-700">Status:</span> <span className="text-gray-900">{selectedCandidate.status}</span></p>
-                    <p><span className="font-semibold text-gray-700">Score:</span> <span className="text-gray-900">{selectedCandidate.score_value}/10</span></p>
-                    <p><span className="font-semibold text-gray-700">Creation Date:</span> <span className="text-gray-900">{new Date(selectedCandidate.creation_date).toLocaleDateString()}</span></p>
-                    
-                  </div>
-                </div>
-                {selectedCandidate.score_description && (
-                  <div className="pt-2">
-                    <span className="font-semibold text-gray-700">Score Description:</span>
-                    <span className="text-gray-700 ml-2">{selectedCandidate.score_description}</span>
-                  </div>
-                )}
-              </div>
-            )}
-            {detailTab === 'experience' && selectedCandidate && (
-              <div className="space-y-4">
-                <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                  <h3 className="font-semibold mb-2 text-gray-700">Technical Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.technical_skills?.split(',').map((skill, i) => (
-                      <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">{skill.trim()}</span>
-                    )) || <p className="text-gray-500">No technical skills available</p>}
-                  </div>
-                </div>
-                <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                  <h3 className="font-semibold mb-2 text-gray-700">Soft Skills</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.soft_skills?.split(',').map((skill, i) => (
-                      <span key={i} className="px-2 py-1 bg-green-100 text-green-800 rounded-md text-sm">{skill.trim()}</span>
-                    )) || <p className="text-gray-500">No soft skills available</p>}
-                  </div>
-                </div>
-              </div>
-            )}
-            {detailTab === 'formation' && selectedCandidate && (
-              <div className="space-y-4">
-                <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                  <h3 className="font-semibold mb-2 text-gray-700">Education</h3>
+        {/* Layout */}
+        <div className="grid grid-cols-[1fr_2fr] gap-6 w-full">
+          {/* Candidate Table */}
+          <div>
+            <div className="bg-white rounded-lg border border-gray-100 p-2">
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="candidate-table">
+                  {(provided) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                      {/* Header */}
+                      <div className="flex w-full text-xs font-medium text-gray-600 tracking-wide border-b border-gray-200 bg-gray-200 rounded-t-md" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+                        <div className="w-12 py-2 px-3">Order</div>
+                        <div className="flex-1 py-2 px-3">Nom Complet</div>
+                        <div className="w-24 py-2 px-3">Score/10</div>
+                        <div className="w-32 py-2 px-3">Type Importation</div>
+                        <div className="w-28 py-2 px-3">Actions</div>
+                      </div>
+                      {/* Draggable notDiscarded candidates */}
+                      {filteredNotDiscarded.map((candidate, index) => (
+                        <Draggable key={candidate.id} draggableId={candidate.id.toString()} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={`flex w-full items-center transition-colors cursor-pointer ${selectedCandidate?.id === candidate.id ? 'bg-gray-50' : ''} hover:bg-gray-100 ${snapshot.isDragging ? 'ring-2 ring-blue-200' : ''}`}
+                              style={{ height: '38px', ...provided.draggableProps.style }}
+                              onClick={() => setSelectedCandidate(candidate)}
+                            >
+                              {/* Drag handle */}
+                              <div
+                                className="w-8 flex items-center justify-center cursor-grab select-none"
+                                {...provided.dragHandleProps}
+                                title="Drag to reorder"
+                                onClick={e => e.stopPropagation()}
+                              >
+                                <span className="text-lg text-gray-400 select-none">≡</span>
+                              </div>
+                              <div className="w-12 py-1 px-2 text-sm text-gray-800 font-normal">{(currentPage - 1) * pageSize + index + 1}</div>
+                              <div className="flex-1 py-1 px-2 text-sm text-gray-900 font-medium">{candidate.name}</div>
+                              <div className="w-24 py-1 px-2 text-sm flex items-center gap-1">{candidate.score_value}/10</div>
+                              <div className="w-32 py-1 px-2 text-sm text-gray-700">{candidate.type_importation || '-'}</div>
+                              <div className="w-28 py-1 px-2">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    className={`p-1 rounded-full transition-colors ${candidate.status === 'validated' ? 'bg-green-50' : 'hover:bg-green-50'}`}
+                                    title="Valider"
+                                    onClick={e => { e.stopPropagation(); handleValidate(candidate.id, candidate.status); }}
+                                    disabled={loadingCandidateId === candidate.id}
+                                    style={{ lineHeight: 0 }}
+                                  >
+                                    <SquareCheckBig size={18} className={candidate.status === 'validated' ? 'text-green-600' : 'text-gray-400'} />
+                                  </button>
+                                  <button
+                                    className={`p-1 rounded-full transition-colors ${candidate.status === 'discarded' ? 'bg-red-50' : 'hover:bg-red-50'}`}
+                                    title="Rejeter"
+                                    onClick={e => { e.stopPropagation(); handleReject(candidate.id, candidate.status); }}
+                                    disabled={loadingCandidateId === candidate.id}
+                                    style={{ lineHeight: 0 }}
+                                  >
+                                    <SquareX size={18} className={candidate.status === 'discarded' ? 'text-red-600' : 'text-gray-400'} />
+                                  </button>
+                                  <button
+                                    onClick={e => handleViewCV(e, candidate.id)}
+                                    className="inline-flex items-center justify-center gap-1 text-blue-600 hover:text-blue-800 p-1 rounded-full transition-colors hover:bg-blue-50"
+                                    title="Voir CV"
+                                    style={{ lineHeight: 0 }}
+                                  >
+                                    <FileText size={16} />
+                                    <span className="text-xs font-medium">CV</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                      {/* Static discarded candidates on last page */}
+                      {filteredDiscarded.map((candidate, index) => (
+                        <div
+                          key={candidate.id}
+                          className={`flex w-full items-center transition-colors cursor-pointer ${selectedCandidate?.id === candidate.id ? 'bg-gray-50' : ''} hover:bg-gray-100 opacity-60`}
+                          style={{ height: '38px' }}
+                          onClick={() => setSelectedCandidate(candidate)}
+                        >
+                          <div className="w-12 py-1 px-2 text-sm text-gray-800 font-normal">{notDiscarded.length + index + 1}</div>
+                          <div className="flex-1 py-1 px-2 text-sm text-gray-900 font-medium">{candidate.name}</div>
+                          <div className="w-24 py-1 px-2 text-sm flex items-center gap-1">{candidate.score_value}/10</div>
+                          <div className="w-32 py-1 px-2 text-sm text-gray-700">{candidate.type_importation || '-'}</div>
+                          <div className="w-28 py-1 px-2">
+                            <div className="flex items-center gap-2">
+                              <button
+                                className={`p-1 rounded-full transition-colors ${candidate.status === 'validated' ? 'bg-green-50' : 'hover:bg-green-50'}`}
+                                title="Valider"
+                                onClick={e => { e.stopPropagation(); handleValidate(candidate.id, candidate.status); }}
+                                disabled={loadingCandidateId === candidate.id}
+                                style={{ lineHeight: 0 }}
+                              >
+                                <SquareCheckBig size={18} className={candidate.status === 'validated' ? 'text-green-600' : 'text-gray-400'} />
+                              </button>
+                              <button
+                                className={`p-1 rounded-full transition-colors ${candidate.status === 'discarded' ? 'bg-red-50' : 'hover:bg-red-50'}`}
+                                title="Rejeter"
+                                onClick={e => { e.stopPropagation(); handleReject(candidate.id, candidate.status); }}
+                                disabled={loadingCandidateId === candidate.id}
+                                style={{ lineHeight: 0 }}
+                              >
+                                <SquareX size={18} className={candidate.status === 'discarded' ? 'text-red-600' : 'text-gray-400'} />
+                              </button>
+                              <button
+                                onClick={e => handleViewCV(e, candidate.id)}
+                                className="inline-flex items-center justify-center gap-1 text-blue-600 hover:text-blue-800 p-1 rounded-full transition-colors hover:bg-blue-50"
+                                title="Voir CV"
+                                style={{ lineHeight: 0 }}
+                              >
+                                <FileText size={16} />
+                                <span className="text-xs font-medium">CV</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </div>
+          </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.education
-                      ? selectedCandidate.education.split(',').map((formation, i) => (
+          {/* Candidate Detail */}
+          <div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <CustomStyledTabs
+                tabs={[
+                  { value: 'candidat', label: 'Candidat' },
+                  { value: 'experience', label: 'Experience' },
+                  { value: 'formation', label: 'Formation' },
+                  { value: 'competence', label: 'Compétence' },
+                  { value: 'resume', label: 'Resume' }
+                ]}
+                defaultValue="candidat"
+                onValueChange={setDetailTab}
+                className="w-full mb-4"
+              />
+              {detailTab === 'candidat' && selectedCandidate && (
+                <div className="space-y-3 text-sm">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-900">{selectedCandidate.name}</span></p>
+                      <p><span className="font-semibold text-gray-700">Email:</span> <span className="text-gray-900">{selectedCandidate.email}</span></p>
+                      <p><span className="font-semibold text-gray-700">Phone:</span> <span className="text-gray-900">{selectedCandidate.phone || 'N/A'}</span></p>
+                      <p><span className="font-semibold text-gray-700">Location:</span> <span className="text-gray-900">{selectedCandidate.location || 'N/A'}</span></p>
+                      <p><span className="font-semibold text-gray-700">Current Position:</span> <span className="text-gray-900">{selectedCandidate.current_position || 'N/A'}</span></p>
+                    </div>
+                    <div className="space-y-2">
+                      <p><span className="font-semibold text-gray-700">Years of Experience:</span> <span className="text-gray-900">{selectedCandidate.years_of_experience || 'N/A'}</span></p>
+                      <p><span className="font-semibold text-gray-700">Status:</span> <span className="text-gray-900">{selectedCandidate.status}</span></p>
+                      <p><span className="font-semibold text-gray-700">Score:</span> <span className="text-gray-900">{selectedCandidate.score_value}/10</span></p>
+                      <p><span className="font-semibold text-gray-700">Creation Date:</span> <span className="text-gray-900">{new Date(selectedCandidate.creation_date).toLocaleDateString()}</span></p>
+
+                    </div>
+                  </div>
+                  {selectedCandidate.score_description && (
+                    <div className="pt-2">
+                      <span className="font-semibold text-gray-700">Score Description:</span>
+                      <span className="text-gray-700 ml-2">{selectedCandidate.score_description}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {detailTab === 'experience' && selectedCandidate && (
+                <div className="space-y-4">
+                  <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
+                    <h3 className="font-semibold mb-2 text-gray-700">Technical Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.technical_skills?.split(',').map((skill, i) => (
+                        <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">{skill.trim()}</span>
+                      )) || <p className="text-gray-500">No technical skills available</p>}
+                    </div>
+                  </div>
+                  <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
+                    <h3 className="font-semibold mb-2 text-gray-700">Soft Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.soft_skills?.split(',').map((skill, i) => (
+                        <span key={i} className="px-2 py-1 bg-green-100 text-green-800 rounded-md text-sm">{skill.trim()}</span>
+                      )) || <p className="text-gray-500">No soft skills available</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {detailTab === 'formation' && selectedCandidate && (
+                <div className="space-y-4">
+                  <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
+                    <h3 className="font-semibold mb-2 text-gray-700">Education</h3>
+
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.education
+                        ? selectedCandidate.education.split(',').map((formation, i) => (
                           <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">
                             {formation.trim()}
                           </span>
                         ))
-                      : <p className="text-gray-500">No education information available</p>
-                    }
-                  </div>
+                        : <p className="text-gray-500">No education information available</p>
+                      }
+                    </div>
 
-                </div>
-                <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                  <h3 className="font-semibold mb-2 text-gray-700">Certifications</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.certifications?.split(',').map((cert, i) => (
-                      <span key={i} className="px-2 py-1 bg-purple-100 text-purple-800 rounded-md text-sm">{cert.trim()}</span>
-                    )) || <p className="text-gray-500">No certifications available</p>}
+                  </div>
+                  <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
+                    <h3 className="font-semibold mb-2 text-gray-700">Certifications</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.certifications?.split(',').map((cert, i) => (
+                        <span key={i} className="px-2 py-1 bg-purple-100 text-purple-800 rounded-md text-sm">{cert.trim()}</span>
+                      )) || <p className="text-gray-500">No certifications available</p>}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            {detailTab === 'competence' && selectedCandidate && (
-              <div className="space-y-4">
-                <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                  <h3 className="font-semibold mb-2 text-gray-700">Languages</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.languages?.split(',').map((lang, i) => (
-                      <span key={i} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm">{lang.trim()}</span>
-                    )) || <p className="text-gray-500">No languages available</p>}
+              )}
+              {detailTab === 'competence' && selectedCandidate && (
+                <div className="space-y-4">
+                  <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
+                    <h3 className="font-semibold mb-2 text-gray-700">Languages</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.languages?.split(',').map((lang, i) => (
+                        <span key={i} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-sm">{lang.trim()}</span>
+                      )) || <p className="text-gray-500">No languages available</p>}
+                    </div>
+                  </div>
+                  <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
+                    <h3 className="font-semibold mb-2 text-gray-700">Hobbies</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.hobbies?.split(',').map((hobby, i) => (
+                        <span key={i} className="px-2 py-1 bg-pink-100 text-pink-800 rounded-md text-sm">{hobby.trim()}</span>
+                      )) || <p className="text-gray-500">No hobbies available</p>}
+                    </div>
                   </div>
                 </div>
+              )}
+              {detailTab === 'resume' && selectedCandidate && (
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                  <h3 className="font-semibold mb-2 text-gray-700">Hobbies</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.hobbies?.split(',').map((hobby, i) => (
-                      <span key={i} className="px-2 py-1 bg-pink-100 text-pink-800 rounded-md text-sm">{hobby.trim()}</span>
-                    )) || <p className="text-gray-500">No hobbies available</p>}
-                  </div>
+                  <h3 className="font-semibold mb-2 text-gray-700">CV Summary</h3>
+                  <p className="text-gray-700">{selectedCandidate.summary || 'No summary available'}</p>
                 </div>
-              </div>
-            )}
-            {detailTab === 'resume' && selectedCandidate && (
-              <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
-                <h3 className="font-semibold mb-2 text-gray-700">CV Summary</h3>
-                <p className="text-gray-700">{selectedCandidate.summary || 'No summary available'}</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
+
+        {/* CV Modal */}
+        {isCVModalOpen && currentCVUrl && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h3 className="text-lg font-semibold">Candidate CV</h3>
+                <button
+                  onClick={closeCVModal}
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <object
+                  data={currentCVUrl}
+                  type="application/pdf"
+                  className="w-full h-full"
+                >
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500">
+                      Unable to display PDF file.
+                      <a
+                        href={currentCVUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 ml-1"
+                      >
+                        Download instead
+                      </a>
+                    </p>
+                  </div>
+                </object>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ImportLocalModal
+          isOpen={isImportLocalModalOpen}
+          onClose={() => setIsImportLocalModalOpen(false)}
+
+          profileId={profileId}
+
+          onCandidatesCreated={refreshCandidates}
+        />
       </div>
-
-      {/* CV Modal */}
-      {isCVModalOpen && currentCVUrl && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">Candidate CV</h3>
-              <button
-                onClick={closeCVModal}
-                className="p-1 hover:bg-gray-100 rounded-full"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <object
-                data={currentCVUrl}
-                type="application/pdf"
-                className="w-full h-full"
-              >
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-500">
-                    Unable to display PDF file. 
-                    <a 
-                      href={currentCVUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-700 ml-1"
-                    >
-                      Download instead
-                    </a>
-                  </p>
-                </div>
-              </object>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ImportLocalModal
-        isOpen={isImportLocalModalOpen}
-        onClose={() => setIsImportLocalModalOpen(false)}
-
-        profileId={profileId}
-
-        onCandidatesCreated={refreshCandidates}
-      />
-    </div>
-  );
+      
+      );
 }; 

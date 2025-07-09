@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
@@ -18,8 +19,10 @@ import { ModalLoading } from '../../../components/modals/ModalLoading';
 
 export const CandidatesSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
   const navigate = useNavigate();
   const { profileId } = useParams();
+
   const [importTab, setImportTab] = useState('local');
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -61,10 +64,13 @@ export const CandidatesSection = () => {
   );
 
   const refreshCandidates = useCallback(async () => {
+
     if (profileId) {
       try {
         setIsLoadingCandidates(true);
         const fetchedCandidates = await candidateService.getTratedCandidatesByProfile(profileId);
+
+
         setCandidates(fetchedCandidates);
         if (fetchedCandidates.length > 0) {
           setSelectedCandidate(fetchedCandidates[0]);
@@ -80,13 +86,16 @@ export const CandidatesSection = () => {
     }
   }, [profileId]);
 
+
   useEffect(() => {
     refreshCandidates();
   }, [refreshCandidates]);
 
   useEffect(() => {
     setCurrentPage(1);
+
   }, [profileId]);
+
 
   useEffect(() => {
     const total = notDiscarded.length;
@@ -103,6 +112,7 @@ export const CandidatesSection = () => {
     { value: "entretien", label: "Entretien" },
     { value: "contrat", label: "Contrat" }
   ];
+
 
   const handleTabChange = async (value) => {
     if (profileId) {
@@ -124,7 +134,6 @@ export const CandidatesSection = () => {
       navigate(`/profile/${profileId}`);
     }
   };
-
   const handleViewCV = async (e, candidateId) => {
     e.stopPropagation();
     try {
@@ -240,55 +249,7 @@ export const CandidatesSection = () => {
   return (
     <div className="p-6 border border-[#EAE7E7] rounded-[5px]">
       <ModalLoading open={isLoadingCandidates} progress={progress} />
-       {/* Top row inputs
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
-              <div className="space-y-2">
-                <label className="block font-['Montserrat',Helvetica] text-base md:text-lg tracking-[0.10px] leading-6">
-                  Services
-                </label>
-                <Input
-                  name="projectServices"
-                  value={formData.projectServices}
-                  disabled
-                  className="h-10 border-[#dfd4d4] font-['Montserrat',Helvetica] text-sm text-[#666666] bg-gray-50"
-                />
-              </div>
 
-              <div className="space-y-2">
-                <label className="block font-['Montserrat',Helvetica] text-base md:text-lg tracking-[0.10px] leading-6">
-                  Resp
-                </label>
-                <Input
-                  name="projectResp"
-                  value={formData.projectResp}
-                  disabled
-                  className="h-10 border-[#dfd4d4] font-['Montserrat',Helvetica] text-sm text-[#666666] bg-gray-50"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block font-['Montserrat',Helvetica] text-base md:text-lg tracking-[0.10px] leading-6">
-                  Status
-                </label>
-                <Select
-                  value={formData.projectStatus}
-                  onValueChange={(value) =>
-                    handleSelectChange("projectStatus", value)
-                  }
-                  disabled
-                >
-                  <SelectTrigger className="h-10 border-[#dfd4d4] font-['Montserrat',Helvetica] text-sm text-[#666666] bg-gray-50">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="En Cours">En Cours</SelectItem>
-                    <SelectItem value="Terminé">Terminé</SelectItem>
-                    <SelectItem value="En Attente">En Attente</SelectItem>
-                    <SelectItem value="Annulé">Annulé</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div> */}
       {/* Main Tabs */}
       <div className="mb-8">
         <CustomTabs
@@ -306,12 +267,12 @@ export const CandidatesSection = () => {
         >
           Importation local
         </Button>
+
         {/* <Button
-          className={`px-6 py-2 font-medium text-sm border-none focus:outline-none rounded-[10px] shadow-md ${importTab === 'plateformes' ? 'bg-[#808080] text-[#222]' : 'bg-[#BDBDBD] text-[#222]'}`}
-          onClick={() => setImportTab('plateformes')}
-        >
-          Importation plateformes
-        </Button> */}
+
+        <Button
+
+
       </div>
 
       {/* Champ de recherche global */}
@@ -521,6 +482,7 @@ export const CandidatesSection = () => {
               <div className="space-y-4">
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
                   <h3 className="font-semibold mb-2 text-gray-700">Education</h3>
+
                   <div className="flex flex-wrap gap-2">
                     {selectedCandidate.education
                       ? selectedCandidate.education.split(',').map((formation, i) => (
@@ -531,6 +493,7 @@ export const CandidatesSection = () => {
                       : <p className="text-gray-500">No education information available</p>
                     }
                   </div>
+
                 </div>
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
                   <h3 className="font-semibold mb-2 text-gray-700">Certifications</h3>
@@ -613,7 +576,9 @@ export const CandidatesSection = () => {
       <ImportLocalModal
         isOpen={isImportLocalModalOpen}
         onClose={() => setIsImportLocalModalOpen(false)}
+
         profileId={profileId}
+
         onCandidatesCreated={refreshCandidates}
       />
     </div>

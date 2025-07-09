@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+
+import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { CustomTabs } from '../../../components/custom-tabs/CustomTabs';
@@ -17,6 +19,10 @@ import { ModalLoading } from '../../../components/modals/ModalLoading';
 
 export const CandidatesSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate();
+  const { profileId } = useParams();
+
   const [importTab, setImportTab] = useState('local');
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -58,10 +64,13 @@ export const CandidatesSection = () => {
   );
 
   const refreshCandidates = useCallback(async () => {
-    if (activeProfileId) {
+
+    if (profileId) {
       try {
         setIsLoadingCandidates(true);
-        const fetchedCandidates = await candidateService.getTratedCandidatesByProfile(activeProfileId);
+        const fetchedCandidates = await candidateService.getTratedCandidatesByProfile(profileId);
+
+
         setCandidates(fetchedCandidates);
         if (fetchedCandidates.length > 0) {
           setSelectedCandidate(fetchedCandidates[0]);
@@ -75,7 +84,8 @@ export const CandidatesSection = () => {
         setIsLoadingCandidates(false);
       }
     }
-  }, [activeProfileId]);
+  }, [profileId]);
+
 
   useEffect(() => {
     refreshCandidates();
@@ -83,7 +93,9 @@ export const CandidatesSection = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeProfileId]);
+
+  }, [profileId]);
+
 
   useEffect(() => {
     const total = notDiscarded.length;
@@ -101,8 +113,27 @@ export const CandidatesSection = () => {
     { value: "contrat", label: "Contrat" }
   ];
 
-  const handleTabChange = (value) => {};
 
+  const handleTabChange = async (value) => {
+    if (profileId) {
+      try {
+        await profileService.setProfileStatus(profileId, value);
+      } catch (e) {
+        // Optionally handle error
+      }
+    }
+    if (value === "publication") {
+      navigate(`/profile/${profileId}/publication`);
+    } else if (value === "candidate") {
+      navigate(`/profile/${profileId}/candidate`);
+    } else if (value === "entretien") {
+      navigate(`/profile/${profileId}/entretien`);
+    } else if (value === "contrat") {
+      navigate(`/profile/${profileId}/contrat`);
+    } else {
+      navigate(`/profile/${profileId}`);
+    }
+  };
   const handleViewCV = async (e, candidateId) => {
     e.stopPropagation();
     try {
@@ -236,12 +267,12 @@ export const CandidatesSection = () => {
         >
           Importation local
         </Button>
+
+        {/* <Button
+
         <Button
-          className={`px-6 py-2 font-medium text-sm border-none focus:outline-none rounded-[10px] shadow-md ${importTab === 'plateformes' ? 'bg-[#808080] text-[#222]' : 'bg-[#BDBDBD] text-[#222]'}`}
-          onClick={() => setImportTab('plateformes')}
-        >
-          Importation plateformes
-        </Button>
+
+
       </div>
 
       {/* Champ de recherche global */}
@@ -451,7 +482,18 @@ export const CandidatesSection = () => {
               <div className="space-y-4">
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
                   <h3 className="font-semibold mb-2 text-gray-700">Education</h3>
-                  <p className="text-gray-700">{selectedCandidate.education || 'No education information available'}</p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {selectedCandidate.education
+                      ? selectedCandidate.education.split(',').map((formation, i) => (
+                          <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-sm">
+                            {formation.trim()}
+                          </span>
+                        ))
+                      : <p className="text-gray-500">No education information available</p>
+                    }
+                  </div>
+
                 </div>
                 <div className="h-40 w-full border rounded-md overflow-y-auto p-4">
                   <h3 className="font-semibold mb-2 text-gray-700">Certifications</h3>
@@ -534,7 +576,9 @@ export const CandidatesSection = () => {
       <ImportLocalModal
         isOpen={isImportLocalModalOpen}
         onClose={() => setIsImportLocalModalOpen(false)}
-        profileId={activeProfileId}
+
+        profileId={profileId}
+
         onCandidatesCreated={refreshCandidates}
       />
     </div>

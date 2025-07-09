@@ -1,0 +1,27 @@
+import os
+import json
+import pandas as pd
+
+def combine_json_folder_to_csv(input_folder, output_csv):
+    rows = []
+    for filename in os.listdir(input_folder):
+        if filename.endswith(".json"):
+            file_path = os.path.join(input_folder, filename)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    rows.append(data)
+            except Exception as e:
+                print(f"❌ Failed to read {filename}: {e}")
+
+    if rows:
+        df = pd.DataFrame(rows)
+        df.to_csv(output_csv, index=False, encoding='utf-8-sig')
+        print(f"✅ CSV file created: {output_csv}")
+    else:
+        print("⚠️ No valid JSON files found.")
+
+# === Usage ===
+input_folder = r"C:\Users\PC\Desktop\last 1.2\backend projet pfe\Script Python\Project CV\src\ai\cv_extractor\api_output_structured"
+output_csv = "combined_cv_data.csv"
+combine_json_folder_to_csv(input_folder, output_csv)

@@ -1,0 +1,14 @@
+{
+  "location": "Bezons, France",
+  "education": "Cycle d’Ingénieur, Option Systèmes Avancés, INSA CVL, Bourges, France, 2018 - 2021; Classe préparatoire aux Grandes Ecoles d’Ingénieurs, Lycée La Résidence, Casablanca, Maroc, 2015 - 2018; Baccalauréat Sciences Mathématiques, Lycée Le Cèdre, Casablanca, Maroc, 2014 – 2015",
+  "years_of_experience": 1,
+  "technical_skills": "HTML, Python, C++, Matlab, VBA, Linux, Pandas, Numpy, OpenCV, TensorFlow, PyMongo, SQL, MongoDB, Pack Office, Chaine de Markov, VAO",
+  "soft_skills": "Organisé, Ponctuel, Curieux, Capacité d’adaptation",
+  "languages": "Français, Anglais",
+  "hobbies": "Natation, Football, Voyage, Jeux vidéo",
+  "certifications": "",
+  "current_position": "Data Scientist - HARMONIC INC",
+  "score_value": 1,
+  "score_description": "Le candidat possède des compétences techniques pertinentes pour le poste mais son expérience professionnelle est limitée par rapport aux exigences du poste de Data Analyst Sénior dans le secteur automobile."
+  "summary": "Jeune diplômé en Ingénierie avec des compétences techniques solides en informatique et en traitement de données. Expérience professionnelle en tant que Data Scientist avec des projets concrets en automatisation et analyse statistique. Passionné par les nouvelles technologies et désireux d'apprendre et de se développer dans le domaine de l'analyse de données."
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Adnane Adnani",
+  "email": "adnane.adnani28@gmail.com",
+  "phone": "+33 616499367",
+  "location": "Bezons, France",
+  "education": "Cycle d’Ingénieur, Option Systèmes Avancés, INSA CVL, Bourges, France, Classe préparatoire aux Grandes Ecoles d’Ingénieurs Mathématique-Physique, Lycée La Résidence, Casablanca, Maroc, Baccalauréat Sciences Mathématiques - Mention Bien, Lycée Le Cèdre, Casablanca, Maroc",
+  "years_of_experience": 1,
+  "technical_skills": "HTML, Python, C++, Matlab, VBA, Linux, Pandas, Numpy, OpenCV, TensorFlow, PyMongo, SQL, MongoDB, Traitement de données, Pack Office, Chaine de Markov, VAO",
+  "soft_skills": "Organisé, Ponctuel, Curieux, Capacité d’adaptation",
+  "languages": "Français, Anglais",
+  "hobbies": "Natation, Football, Voyage, Jeux vidéo",
+  "certifications": "",
+  "summary": "Jeune diplômé de l’INSA Centre Val-de-Loire avec une expérience en tant que Data Scientist et planificateur, possédant des compétences en Python, SQL, et gestion de projet. À la recherche d'un premier emploi.",
+  "score_value": 2,
+  "score_description": "Le candidat possède une bonne base technique en Python et SQL, mais manque d'expérience requise pour le poste de Data Analyst Sénior. Les compétences en Power BI et l'expérience dans le secteur automobile ne sont pas présentes.",
+  "current_position": "Jeune diplômé"
+}

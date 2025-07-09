@@ -64,3 +64,8 @@ service-ai/.env
 server/uploads/
 server/migration_test/
 server/models_test/
+
+service-ai/models/
+*.gguf
+*.pt
+*.h5
